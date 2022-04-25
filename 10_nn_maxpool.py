@@ -26,11 +26,10 @@ my = MyNN()
 writer = SummaryWriter("logs")
 step = 0
 
-for data in dataset:
+for data in dataloader:
     imgs, targets = data
     print(imgs.shape)
-    # imgs = torch.reshape(imgs, (-1, 3, 32, 32))
-    writer.add_images("input", imgs, step)   # !
+    writer.add_images("input", imgs, step)
     print(imgs.shape)
     output = my(imgs)
     writer.add_images("output", output, step)
