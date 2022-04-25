@@ -33,7 +33,7 @@ for data in dataloader:
     print(imgs.shape)
 
     writer.add_images("input", imgs, step, dataformats="NCHW")
-    torch.reshape(output, (-1, 3, 30, 30))
+    output = torch.reshape(output, (-1, 3, 30, 30))
     print(output.shape)
     writer.add_images("output", output, step, dataformats="NCHW")   # !
 
