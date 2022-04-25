@@ -30,13 +30,11 @@ step = 0
 for data in dataloader:
     imgs, targets = data
     output = nn(imgs)
-    print(imgs.shape)
-
+    # print(imgs.shape)
     writer.add_images("input", imgs, step, dataformats="NCHW")
     output = torch.reshape(output, (-1, 3, 30, 30))
-    print(output.shape)
-    writer.add_images("output", output, step, dataformats="NCHW")   # !
-
+    # print(output.shape)
+    writer.add_images("output", output, step, dataformats="NCHW")
     step = step + 1
 
 writer.close()
