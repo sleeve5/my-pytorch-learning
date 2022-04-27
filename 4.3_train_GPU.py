@@ -28,10 +28,6 @@ class Mynn(nn.Module):
         return y
 
 
-# 训练设备
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print("训练设备为:{}".format(device))
-
 # 数据集准备
 train_data = torchvision.datasets.CIFAR10("dataset", train=True, download=True,
                                           transform=torchvision.transforms.ToTensor())
@@ -51,11 +47,14 @@ test_dataloader = DataLoader(test_data, batch_size=64)
 
 # 创建模型
 nn_train = Mynn()
-nn_train = nn_train.to(device)
+
+if torch.cuda.is_available():
+    nn_train = nn_train.cuda()
 
 # 损失函数
 loss_fn = nn.CrossEntropyLoss()
-loss_fn = loss_fn.to(device)
+if torch.cuda.is_available():
+    loss_fn = loss_fn.cuda()
 
 # 优化器
 learning_rate = 1e-2
@@ -74,19 +73,19 @@ writer = SummaryWriter("logs/train")
 
 # 设置训练轮
 epoch = 10
-
+time_start = time.time()
 
 for i in range(epoch):
     print("第{}轮训练开始".format(i + 1))
-    time_start = time.time()
 
     # 开始训练
     nn_train.train()
     for data in train_dataloader:
         imgs, targets = data
 
-        imgs = imgs.to(device)
-        targets = targets.to(device)
+        if torch.cuda.is_available():
+            imgs = imgs.cuda()
+            targets = targets.cuda()
 
         output = nn_train(imgs)
         loss = loss_fn(output, targets)
@@ -101,7 +100,6 @@ for i in range(epoch):
         if total_train_step % 100 == 0:
             time_end = time.time()
             print("用时{}".format(time_end - time_start))
-
             print("训练次数{}， Loss：{}".format(total_train_step, loss.item()))
             writer.add_scalar("train_loss", loss.item(), total_train_step)
 
@@ -114,8 +112,9 @@ for i in range(epoch):
         for data in test_dataloader:
             imgs, targets = data
 
-            imgs = imgs.to(device)
-            targets = targets.to(device)
+            if torch.cuda.is_available():
+                imgs = imgs.cuda()
+                targets = targets.cuda()
 
             output = nn_train(imgs)
             loss = loss_fn(output, targets)
@@ -136,6 +135,6 @@ for i in range(epoch):
     torch.save(nn_train, "models/nn_train{}.pth".format(i))
     print("模型已保存")
 
-torch.save(nn_train, "nn_train.pyh")
+torch.save(nn_train, "nn_train.pth")
 
 writer.close()

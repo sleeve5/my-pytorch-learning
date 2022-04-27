@@ -5,6 +5,27 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
 
+
+class Mynn(nn.Module):
+    def __init__(self):
+        super(Mynn, self).__init__()
+        self.model = nn.Sequential(
+            nn.Conv2d(3, 32, 5, 1, 2),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 32, 5, 1, 2),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, 5, 1, 2),
+            nn.MaxPool2d(2),
+            nn.Flatten(),
+            nn.Linear(64*4*4, 64),
+            nn.Linear(64, 10)
+        )
+
+    def forward(self, x):
+        y = self.model(x)
+        return y
+
+
 # 数据集准备
 train_data = torchvision.datasets.CIFAR10("dataset", train=True, download=True,
                                           transform=torchvision.transforms.ToTensor())
